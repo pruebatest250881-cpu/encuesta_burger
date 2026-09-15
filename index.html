@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Cuéntanos qué tal estuvo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#FBF6EC;
+    --char:#2B1F17;
+    --char-soft:#6B5B4E;
+    --carne:#C1432E;
+    --pan:#C98A1F;
+    --aderezo:#5D7F3C;
+    --precio:#7A5230;
+    --cambio:#A8471F;
+    --line:#E7DCC9;
+    --card-bg:#FFFFFF;
+  }
+
+  *{box-sizing:border-box;}
+
+  body{
+    margin:0;
+    background:var(--cream);
+    color:var(--char);
+    font-family:'Work Sans', sans-serif;
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh;
+  }
+
+  .wrap{
+    max-width:520px;
+    margin:0 auto;
+    padding:0 20px 56px;
+  }
+
+  /* progress bar, fixed to top */
+  .progress-shell{
+    position:sticky;
+    top:0;
+    z-index:10;
+    background:var(--cream);
+    padding:14px 20px 10px;
+    max-width:520px;
+    margin:0 auto;
+  }
+  .progress-track{
+    height:6px;
+    border-radius:99px;
+    background:var(--line);
+    overflow:hidden;
+  }
+  .progress-fill{
+    height:100%;
+    width:0%;
+    background:var(--carne);
+    border-radius:99px;
+    transition:width .35s ease;
+  }
+
+  header.hero{
+    padding:28px 0 8px;
+    text-align:left;
+  }
+  .hero .kicker-emoji{
+    font-size:2.1rem;
+    line-height:1;
+    display:block;
+    margin-bottom:10px;
+  }
+  .hero h1{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    font-size:1.9rem;
+    line-height:1.15;
+    margin:0 0 10px;
+    letter-spacing:-.01em;
+  }
+  .hero p{
+    margin:0;
+    color:var(--char-soft);
+    font-size:.98rem;
+    line-height:1.5;
+    max-width:38ch;
+  }
+
+  form{
+    margin-top:8px;
+  }
+
+  fieldset{
+    border:none;
+    margin:0 0 30px;
+    padding:0;
+  }
+
+  .q-head{
+    display:flex;
+    align-items:baseline;
+    gap:9px;
+    margin-bottom:12px;
+  }
+  .q-emoji{ font-size:1.15rem; }
+  legend, .q-title{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    font-size:1.12rem;
+    color:var(--char);
+  }
+
+  .options{
+    display:flex;
+    flex-direction:column;
+    gap:9px;
+  }
+
+  .opt{
+    position:relative;
+  }
+  .opt input{
+    position:absolute;
+    opacity:0;
+    width:0; height:0;
+  }
+  .opt label{
+    display:flex;
+    align-items:center;
+    gap:11px;
+    padding:13px 16px;
+    background:var(--card-bg);
+    border:1.5px solid var(--line);
+    border-radius:13px;
+    font-size:.97rem;
+    line-height:1.35;
+    cursor:pointer;
+    transition:border-color .15s ease, background .15s ease, transform .1s ease;
+  }
+  .opt label:active{ transform:scale(.99); }
+
+  .opt .dot{
+    flex:0 0 auto;
+    width:19px; height:19px;
+    border-radius:50%;
+    border:2px solid var(--line);
+    position:relative;
+    transition:border-color .15s ease;
+  }
+  .opt .dot::after{
+    content:"";
+    position:absolute;
+    inset:3px;
+    border-radius:50%;
+    background:var(--accent, var(--carne));
+    transform:scale(0);
+    transition:transform .15s ease;
+  }
+  .opt input:checked + label{
+    border-color:var(--accent, var(--carne));
+    background:color-mix(in srgb, var(--accent, var(--carne)) 8%, white);
+  }
+  .opt input:checked + label .dot{ border-color:var(--accent, var(--carne)); }
+  .opt input:checked + label .dot::after{ transform:scale(1); }
+  .opt input:focus-visible + label{ outline:2px solid var(--accent, var(--carne)); outline-offset:2px; }
+
+  fieldset[data-section="carne"] .dot{ --accent:var(--carne); }
+  fieldset[data-section="pan"] .dot{ --accent:var(--pan); }
+  fieldset[data-section="aderezo"] .dot{ --accent:var(--aderezo); }
+  fieldset[data-section="precio"] .dot{ --accent:var(--precio); }
+  fieldset[data-section="cambio"] .dot{ --accent:var(--cambio); }
+  fieldset[data-section="carne"] input:checked + label{ --accent:var(--carne); }
+  fieldset[data-section="pan"] input:checked + label{ --accent:var(--pan); }
+  fieldset[data-section="aderezo"] input:checked + label{ --accent:var(--aderezo); }
+  fieldset[data-section="precio"] input:checked + label{ --accent:var(--precio); }
+  fieldset[data-section="cambio"] input:checked + label{ --accent:var(--cambio); }
+
+  .otra-input{
+    margin-top:9px;
+    max-height:0;
+    overflow:hidden;
+    transition:max-height .25s ease;
+  }
+  .otra-input.open{ max-height:60px; }
+  .otra-input input[type="text"]{
+    width:100%;
+    padding:12px 14px;
+    border-radius:11px;
+    border:1.5px solid var(--line);
+    font-family:'Work Sans', sans-serif;
+    font-size:.95rem;
+    background:var(--card-bg);
+  }
+  .otra-input input[type="text"]:focus{
+    outline:none;
+    border-color:var(--cambio);
+  }
+
+  /* segmented toggle for last question */
+  .segmented{
+    display:flex;
+    gap:9px;
+  }
+  .segmented .opt{ flex:1; }
+  .segmented label{
+    justify-content:center;
+    text-align:center;
+    font-weight:500;
+  }
+
+  .submit-btn{
+    width:100%;
+    padding:16px;
+    border:none;
+    border-radius:13px;
+    background:var(--carne);
+    color:#fff;
+    font-family:'Work Sans', sans-serif;
+    font-weight:600;
+    font-size:1.02rem;
+    cursor:pointer;
+    transition:background .15s ease, transform .1s ease;
+    margin-top:6px;
+  }
+  .submit-btn:active{ transform:scale(.985); }
+  .submit-btn:disabled{
+    background:var(--line);
+    color:var(--char-soft);
+    cursor:not-allowed;
+  }
+
+  .hint{
+    text-align:center;
+    font-size:.82rem;
+    color:var(--char-soft);
+    margin-top:10px;
+  }
+
+  /* thank you screen */
+  .thanks{
+    display:none;
+    flex-direction:column;
+    align-items:flex-start;
+    padding:64px 0 40px;
+  }
+  .thanks.show{ display:flex; }
+  .thanks .mark{
+    width:52px; height:52px;
+    border-radius:50%;
+    background:var(--aderezo);
+    color:#fff;
+    display:flex; align-items:center; justify-content:center;
+    font-size:1.5rem;
+    margin-bottom:20px;
+  }
+  .thanks h2{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    font-size:1.6rem;
+    margin:0 0 10px;
+  }
+  .thanks p{
+    color:var(--char-soft);
+    font-size:.98rem;
+    line-height:1.5;
+    margin:0;
+  }
+
+  form.hide{ display:none; }
+  header.hide{ display:none; }
+</style>
+</head>
+<body>
+
+<div class="progress-shell">
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+</div>
+
+<div class="wrap">
+
+  <header class="hero" id="hero">
+    <span class="kicker-emoji">🍔</span>
+    <h1>¿Qué tal tu hamburguesa hoy?</h1>
+    <p>Son solo unas preguntas rápidas. Nos ayuda muchísimo a mejorar lo que sale de la cocina.</p>
+  </header>
+
+  <form id="surveyForm">
+
+    <fieldset data-section="carne">
+      <div class="q-head"><span class="q-emoji">🥩</span><legend>Sabor de la carne</legend></div>
+      <div class="options">
+        <div class="opt"><input type="radio" name="carne" id="carne1" value="Perfecta de sal y sabor."><label for="carne1"><span class="dot"></span>Perfecta de sal y sabor.</label></div>
+        <div class="opt"><input type="radio" name="carne" id="carne2" value="Le faltó sal."><label for="carne2"><span class="dot"></span>Le faltó sal.</label></div>
+        <div class="opt"><input type="radio" name="carne" id="carne3" value="Se sintió un poco seca."><label for="carne3"><span class="dot"></span>Se sintió un poco seca.</label></div>
+        <div class="opt"><input type="radio" name="carne" id="carne4" value="Muy salada."><label for="carne4"><span class="dot"></span>Muy salada.</label></div>
+      </div>
+    </fieldset>
+
+    <fieldset data-section="pan">
+      <div class="q-head"><span class="q-emoji">🍞</span><legend>El pan</legend></div>
+      <div class="options">
+        <div class="opt"><input type="radio" name="pan" id="pan1" value="Muy bien, suave y caliente."><label for="pan1"><span class="dot"></span>Muy bien, suave y caliente.</label></div>
+        <div class="opt"><input type="radio" name="pan" id="pan2" value="El pan se humedeció."><label for="pan2"><span class="dot"></span>El pan se humedeció.</label></div>
+        <div class="opt"><input type="radio" name="pan" id="pan3" value="Llegó frío."><label for="pan3"><span class="dot"></span>Llegó frío.</label></div>
+      </div>
+    </fieldset>
+
+    <fieldset data-section="aderezo">
+      <div class="q-head"><span class="q-emoji">🥫</span><legend>El aderezo</legend></div>
+      <div class="options">
+        <div class="opt"><input type="radio" name="aderezo" id="ader1" value="El sabor está perfecto."><label for="ader1"><span class="dot"></span>El sabor está perfecto.</label></div>
+        <div class="opt"><input type="radio" name="aderezo" id="ader2" value="Le faltó aderezo."><label for="ader2"><span class="dot"></span>Le faltó aderezo.</label></div>
+        <div class="opt"><input type="radio" name="aderezo" id="ader3" value="Demasiado aderezo."><label for="ader3"><span class="dot"></span>Demasiado aderezo.</label></div>
+        <div class="opt"><input type="radio" name="aderezo" id="ader4" value="No me gusta el sabor."><label for="ader4"><span class="dot"></span>No me gusta el sabor.</label></div>
+      </div>
+    </fieldset>
+
+    <fieldset data-section="precio">
+      <div class="q-head"><span class="q-emoji">💵</span><legend>¿Cómo sintió el precio?</legend></div>
+      <div class="options">
+        <div class="opt"><input type="radio" name="precio" id="precio1" value="Está bien, es justo."><label for="precio1"><span class="dot"></span>Está bien, es justo.</label></div>
+        <div class="opt"><input type="radio" name="precio" id="precio2" value="Un poco cara para lo que es."><label for="precio2"><span class="dot"></span>Un poco cara para lo que es.</label></div>
+        <div class="opt"><input type="radio" name="precio" id="precio3" value="Demasiado cara."><label for="precio3"><span class="dot"></span>Demasiado cara.</label></div>
+      </div>
+    </fieldset>
+
+    <fieldset data-section="cambio">
+      <div class="q-head"><span class="q-emoji">✏️</span><legend>Si cambiara UNA sola cosa, ¿qué sería?</legend></div>
+      <div class="options">
+        <div class="opt"><input type="radio" name="cambio" id="cambio1" value="Tamaño de la carne"><label for="cambio1"><span class="dot"></span>Tamaño de la carne</label></div>
+        <div class="opt"><input type="radio" name="cambio" id="cambio2" value="Cantidad de papas"><label for="cambio2"><span class="dot"></span>Cantidad de papas</label></div>
+        <div class="opt"><input type="radio" name="cambio" id="cambio3" value="Otro pan"><label for="cambio3"><span class="dot"></span>Otro pan</label></div>
+        <div class="opt"><input type="radio" name="cambio" id="cambio4" value="Cambiar aderezo"><label for="cambio4"><span class="dot"></span>Cambiar aderezo</label></div>
+        <div class="opt"><input type="radio" name="cambio" id="cambio5" value="El precio"><label for="cambio5"><span class="dot"></span>El precio</label></div>
+        <div class="opt"><input type="radio" name="cambio" id="cambio6" value="Otra" data-reveal="otraTexto"><label for="cambio6"><span class="dot"></span>Otra</label></div>
+      </div>
+      <div class="otra-input" id="otraTexto">
+        <input type="text" name="cambioOtra" placeholder="Cuéntanos qué cambiarías">
+      </div>
+    </fieldset>
+
+    <fieldset data-section="compra">
+      <div class="q-head"><span class="q-emoji">🍟</span><span class="q-title">Tu pedido</span></div>
+      <div class="options segmented">
+        <div class="opt"><input type="radio" name="compra" id="compra1" value="Compró papas"><label for="compra1"><span class="dot"></span>Con papas</label></div>
+        <div class="opt"><input type="radio" name="compra" id="compra2" value="Solo hamburguesa"><label for="compra2"><span class="dot"></span>Solo hamburguesa</label></div>
+      </div>
+    </fieldset>
+
+    <button type="submit" class="submit-btn" id="submitBtn" disabled>Enviar mi opinión</button>
+    <p class="hint">Anónimo. No pedimos tu nombre ni tu correo.</p>
+  </form>
+
+  <div class="thanks" id="thanksScreen">
+    <div class="mark">✓</div>
+    <h2>Gracias por tu opinión</h2>
+    <p>La leemos toda, en serio. Nos ayuda a mejorar la próxima hamburguesa que preparemos.</p>
+  </div>
+
+</div>
+
+<script>
+  // ⚠️ PASO OBLIGATORIO: reemplaza esta URL por la de tu propio Google Apps Script
+  // (ver instrucciones en INSTRUCCIONES.md)
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxq21k43sMQ3PLjmTTohfxF5zUPtxwoAkNSAK0qPZQd5HAl_NrXmQlSpT4RpoVg5u8/exec";
+
+  const form = document.getElementById('surveyForm');
+  const submitBtn = document.getElementById('submitBtn');
+  const progressFill = document.getElementById('progressFill');
+  const totalFields = ['carne','pan','aderezo','precio','cambio','compra'];
+
+  // revelar campo de texto "Otra"
+  document.querySelectorAll('[data-reveal]').forEach(input => {
+    input.addEventListener('change', () => {
+      const target = document.getElementById(input.dataset.reveal);
+      target.classList.toggle('open', input.checked);
+    });
+  });
+  // ocultar "otra" si se elige otra opción de esa misma pregunta
+  document.querySelectorAll('input[name="cambio"]').forEach(input => {
+    input.addEventListener('change', () => {
+      const otra = document.getElementById('otraTexto');
+      if (input.value !== 'Otra') otra.classList.remove('open');
+    });
+  });
+
+  function updateProgress(){
+    let answered = 0;
+    totalFields.forEach(name => {
+      if (form.querySelector(`input[name="${name}"]:checked`)) answered++;
+    });
+    progressFill.style.width = (answered / totalFields.length * 100) + '%';
+    submitBtn.disabled = answered < totalFields.length;
+  }
+  form.addEventListener('change', updateProgress);
+
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    if (submitBtn.disabled) return;
+
+    const data = {
+      timestamp: new Date().toISOString(),
+      carne: form.carne.value,
+      pan: form.pan.value,
+      aderezo: form.aderezo.value,
+      precio: form.precio.value,
+      cambio: form.cambio.value,
+      cambioOtra: form.cambio.value === 'Otra' ? form.cambioOtra.value : '',
+      compra: form.compra.value
+    };
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Enviando…';
+
+    fetch(SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors', // necesario para Google Apps Script; no permite leer la respuesta, así que asumimos éxito
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(data)
+    }).finally(() => {
+      document.getElementById('hero').classList.add('hide');
+      form.classList.add('hide');
+      document.getElementById('thanksScreen').classList.add('show');
+    });
+  });
+</script>
+
+</body>
+</html>
