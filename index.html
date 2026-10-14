@@ -307,48 +307,6 @@
       </div>
     </fieldset>
 
-    <fieldset data-section="aderezo">
-      <div class="q-head"><span class="q-emoji">🥫</span><legend>El aderezo</legend></div>
-      <div class="options">
-        <div class="opt"><input type="radio" name="aderezo" id="ader1" value="El sabor está perfecto."><label for="ader1"><span class="dot"></span>El sabor está perfecto.</label></div>
-        <div class="opt"><input type="radio" name="aderezo" id="ader2" value="Le faltó aderezo."><label for="ader2"><span class="dot"></span>Le faltó aderezo.</label></div>
-        <div class="opt"><input type="radio" name="aderezo" id="ader3" value="Demasiado aderezo."><label for="ader3"><span class="dot"></span>Demasiado aderezo.</label></div>
-        <div class="opt"><input type="radio" name="aderezo" id="ader4" value="No me gusta el sabor."><label for="ader4"><span class="dot"></span>No me gusta el sabor.</label></div>
-      </div>
-    </fieldset>
-
-    <fieldset data-section="precio">
-      <div class="q-head"><span class="q-emoji">💵</span><legend>¿Cómo sintió el precio?</legend></div>
-      <div class="options">
-        <div class="opt"><input type="radio" name="precio" id="precio1" value="Está bien, es justo."><label for="precio1"><span class="dot"></span>Está bien, es justo.</label></div>
-        <div class="opt"><input type="radio" name="precio" id="precio2" value="Un poco cara para lo que es."><label for="precio2"><span class="dot"></span>Un poco cara para lo que es.</label></div>
-        <div class="opt"><input type="radio" name="precio" id="precio3" value="Demasiado cara."><label for="precio3"><span class="dot"></span>Demasiado cara.</label></div>
-      </div>
-    </fieldset>
-
-    <fieldset data-section="cambio">
-      <div class="q-head"><span class="q-emoji">✏️</span><legend>Si cambiara UNA sola cosa, ¿qué sería?</legend></div>
-      <div class="options">
-        <div class="opt"><input type="radio" name="cambio" id="cambio1" value="Tamaño de la carne"><label for="cambio1"><span class="dot"></span>Tamaño de la carne</label></div>
-        <div class="opt"><input type="radio" name="cambio" id="cambio2" value="Cantidad de papas"><label for="cambio2"><span class="dot"></span>Cantidad de papas</label></div>
-        <div class="opt"><input type="radio" name="cambio" id="cambio3" value="Otro pan"><label for="cambio3"><span class="dot"></span>Otro pan</label></div>
-        <div class="opt"><input type="radio" name="cambio" id="cambio4" value="Cambiar aderezo"><label for="cambio4"><span class="dot"></span>Cambiar aderezo</label></div>
-        <div class="opt"><input type="radio" name="cambio" id="cambio5" value="El precio"><label for="cambio5"><span class="dot"></span>El precio</label></div>
-        <div class="opt"><input type="radio" name="cambio" id="cambio6" value="Otra" data-reveal="otraTexto"><label for="cambio6"><span class="dot"></span>Otra</label></div>
-      </div>
-      <div class="otra-input" id="otraTexto">
-        <input type="text" name="cambioOtra" placeholder="Cuéntanos qué cambiarías">
-      </div>
-    </fieldset>
-
-    <fieldset data-section="compra">
-      <div class="q-head"><span class="q-emoji">🍟</span><span class="q-title">¿Cómo fue su pedido?</span></div>
-      <div class="options segmented">
-        <div class="opt"><input type="radio" name="compra" id="compra1" value="Hamburguesa con papas"><label for="compra1"><span class="dot"></span>Con papas</label></div>
-        <div class="opt"><input type="radio" name="compra" id="compra2" value="Solo hamburguesa"><label for="compra2"><span class="dot"></span>Solo hamburguesa</label></div>
-      </div>
-    </fieldset>
-
     <button type="submit" class="submit-btn" id="submitBtn" disabled>Enviar mi opinión</button>
     <p class="hint">Anónimo. No pedimos tu nombre ni tu correo.</p>
   </form>
@@ -369,22 +327,8 @@
   const form = document.getElementById('surveyForm');
   const submitBtn = document.getElementById('submitBtn');
   const progressFill = document.getElementById('progressFill');
-  const totalFields = ['carne','pan','aderezo','precio','cambio','compra'];
+  const totalFields = ['carne','pan'];
 
-  // revelar campo de texto "Otra"
-  document.querySelectorAll('[data-reveal]').forEach(input => {
-    input.addEventListener('change', () => {
-      const target = document.getElementById(input.dataset.reveal);
-      target.classList.toggle('open', input.checked);
-    });
-  });
-  // ocultar "otra" si se elige otra opción de esa misma pregunta
-  document.querySelectorAll('input[name="cambio"]').forEach(input => {
-    input.addEventListener('change', () => {
-      const otra = document.getElementById('otraTexto');
-      if (input.value !== 'Otra') otra.classList.remove('open');
-    });
-  });
 
   function updateProgress(){
     let answered = 0;
@@ -403,12 +347,7 @@
     const data = {
       timestamp: new Date().toISOString(),
       carne: form.carne.value,
-      pan: form.pan.value,
-      aderezo: form.aderezo.value,
-      precio: form.precio.value,
-      cambio: form.cambio.value,
-      cambioOtra: form.cambio.value === 'Otra' ? form.cambioOtra.value : '',
-      compra: form.compra.value
+      pan: form.pan.value
     };
 
     submitBtn.disabled = true;
